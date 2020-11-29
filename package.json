@@ -1,0 +1,31 @@
+{
+  "name": "extensions-main",
+  "version": "1.0.0",
+  "description": "The default source for Paperback, MangaDex",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node dist/api.js",
+    "build": "tsc",
+    "test": "node_modules/.bin/mocha --timeout 300000 -r ts-node/register src/**/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
+    "bundle": "gulp bundle --gulpfile node_modules/paperback-extensions-common/src/repo-gulpfile.js"
+  },
+  "author": "Faizan Durrani",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "cheerio": "^1.0.0-rc.3",
+    "paperback-extensions-common": "^1.1.11",
+    "ts-mocha": "^7.0.0",
+    "tsify": "^4.0.2",
+    "typescript": "^3.9.6"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.21",
+    "@types/mocha": "^7.0.2",
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
+    "typedoc": "^0.17.6"
+  }
+}
