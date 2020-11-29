@@ -6,7 +6,7 @@ export class MangaDex extends Source {
     super(cheerio);
   }
 
-  get version(): string { return '1.1.0'; }
+  get version(): string { return '1.1.1'; }
   get name(): string { return 'MangaDex'; }
   get icon(): string { return 'icon.png'; }
   get author(): string { return 'Faizan Durrani'; }
