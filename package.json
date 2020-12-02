@@ -8,7 +8,8 @@
     "build": "tsc",
     "test": "node_modules/.bin/mocha --timeout 300000 -r ts-node/register src/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
-    "bundle": "gulp bundle --gulpfile node_modules/paperback-extensions-common/src/repo-gulpfile.js"
+    "bundle": "paperback bundle",
+    "serve": "paperback serve"
   },
   "author": "Faizan Durrani",
   "license": "ISC",
@@ -16,7 +17,8 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "cheerio": "^1.0.0-rc.3",
-    "paperback-extensions-common": "^1.1.11",
+    "paperback-cli": "^1.2.0",
+    "paperback-extensions-common": "^1.2.0",
     "ts-mocha": "^7.0.0",
     "tsify": "^4.0.2",
     "typescript": "^3.9.6"
@@ -24,6 +26,10 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.21",
     "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "eslint": "^7.14.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.2.0",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
     "typedoc": "^0.17.6"
