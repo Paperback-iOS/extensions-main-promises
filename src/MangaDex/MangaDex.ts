@@ -244,7 +244,7 @@ export class MangaDex extends Source {
         status: query.status,
         hStatus: query.hStatus,
       }),
-      headers: {
+      headers: { 
         'content-type': 'application/json',
       },
     })
