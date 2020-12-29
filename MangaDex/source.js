@@ -471,6 +471,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
         }
     }
     constructSearchRequest(query, page, items = 50) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return createRequestObject({
             url: SEARCH_ENDPOINT + `?page=${page}&items=${items}`,
             method: 'POST',
@@ -478,16 +479,16 @@ class MangaDex extends paperback_extensions_common_1.Source {
             // so this is necessary
             data: JSON.stringify({
                 title: query.title,
-                includeDemographic: query.includeDemographic,
-                includeTheme: query.includeTheme,
-                includeFormat: query.includeFormat,
-                includeContent: query.includeContent,
-                includeGenre: query.includeGenre,
-                excludeDemographic: query.excludeDemographic,
-                excludeTheme: query.excludeTheme,
-                excludeFormat: query.excludeFormat,
-                excludeContent: query.excludeContent,
-                excludeGenre: query.excludeGenre,
+                includeDemographic: (_a = query.includeDemographic) === null || _a === void 0 ? void 0 : _a.map(x => parseInt(x)),
+                includeTheme: (_b = query.includeTheme) === null || _b === void 0 ? void 0 : _b.map(x => parseInt(x)),
+                includeFormat: (_c = query.includeFormat) === null || _c === void 0 ? void 0 : _c.map(x => parseInt(x)),
+                includeContent: (_d = query.includeContent) === null || _d === void 0 ? void 0 : _d.map(x => parseInt(x)),
+                includeGenre: (_e = query.includeGenre) === null || _e === void 0 ? void 0 : _e.map(x => parseInt(x)),
+                excludeDemographic: (_f = query.excludeDemographic) === null || _f === void 0 ? void 0 : _f.map(x => parseInt(x)),
+                excludeTheme: (_g = query.excludeTheme) === null || _g === void 0 ? void 0 : _g.map(x => parseInt(x)),
+                excludeFormat: (_h = query.excludeFormat) === null || _h === void 0 ? void 0 : _h.map(x => parseInt(x)),
+                excludeContent: (_j = query.excludeContent) === null || _j === void 0 ? void 0 : _j.map(x => parseInt(x)),
+                excludeGenre: (_k = query.excludeGenre) === null || _k === void 0 ? void 0 : _k.map(x => parseInt(x)),
                 includeOperator: query.includeOperator,
                 excludeOperator: query.excludeOperator,
                 author: query.author,
