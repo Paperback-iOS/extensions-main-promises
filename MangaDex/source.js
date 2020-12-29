@@ -336,6 +336,10 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor() {
         super(...arguments);
         this.parser = new Parser_1.Parser();
+        this.requestManager = createRequestManager({
+            requestsPerSecond: 2,
+            requestTimeout: 10000,
+        });
     }
     async getMangaDetails(mangaId) {
         const request = createRequestObject({
