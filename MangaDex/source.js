@@ -483,7 +483,7 @@ exports.MangaDex = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 class MangaDex extends paperback_extensions_common_1.Source {
     get version() {
-        return '1.1.0';
+        return '1.1.1';
     }
     get name() {
         return 'SafeDex';
@@ -685,19 +685,17 @@ class MangaDex extends paperback_extensions_common_1.Source {
         const request1 = this.constructSearchRequest({
             includeDemographic: ['1'],
         }, 1, 10);
-        const request2 = createRequestObject({
-            url: CACHE_DOMAIN + '/updates?limit=10',
-            method: 'GET',
-            incognito: true,
-        });
+        const request2 = this.constructSearchRequest({
+            includeGenre: ['2'],
+        }, 1, 10);
         const section1 = createHomeSection({
             id: this.sectionKeys.shounen,
-            title: 'UPDATED SHOUNENS',
+            title: 'UPDATED SHOUNEN TITLES',
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
         });
         const section3 = createHomeSection({
             id: this.sectionKeys.recentlyUpdated,
-            title: 'RECENTLY UPDATED TITLES',
+            title: 'UPDATED ACTION TITLES',
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
         });
         return [
@@ -731,14 +729,9 @@ class MangaDex extends paperback_extensions_common_1.Source {
                     includeDemographic: ['1'],
                 }, page);
             case this.sectionKeys.recentlyUpdated:
-                return createRequestObject({
-                    url: `${CACHE_DOMAIN}/updates?page=${page}`,
-                    method: 'GET',
-                    metadata: {
-                        key,
-                        page,
-                    },
-                });
+                return this.constructSearchRequest({
+                    includeGenre: ['2'],
+                }, page);
         }
     }
     getViewMoreItems(data, key, metadata) {
