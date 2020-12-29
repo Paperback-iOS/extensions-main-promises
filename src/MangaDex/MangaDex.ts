@@ -58,6 +58,11 @@ export const MangaDexInfo: SourceInfo = {
 export class MangaDex extends Source {
   parser = new Parser()
 
+  requestManager = createRequestManager({
+    requestsPerSecond: 2,
+    requestTimeout: 10000,
+  })
+
   async getMangaDetails(mangaId: string): Promise<Manga> {
     const request = createRequestObject({
       url: MANGA_ENDPOINT,
