@@ -41,9 +41,9 @@ export const MangaDexInfo: SourceInfo = {
   author: 'Faizan Durrani',
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
-  name: 'SafeDex',
-  version: '2.0.0',
-  authorWebsite: 'https://github.com/FaizanDurrani',
+  name: 'MangaDex Unlocked Promises',
+  version: '2.0.1',
+  authorWebsite: 'https://github.com/Pogogo007/extensions-main-promises',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
   language: LanguageCode.ENGLISH,
@@ -72,6 +72,7 @@ export class MangaDex extends Source {
       },
       data: JSON.stringify({
         id: [parseInt(mangaId)],
+        bypassFilter: true,
       }),
     })
 
@@ -219,7 +220,7 @@ export class MangaDex extends Source {
         // If we found updates on this page, notify the app
         // This is needed so that the app can save the updates
         // in case the background job is killed by iOS
-        mangaUpdatesFoundCallback(createMangaUpdates({ids: updatedManga.updates}))
+        mangaUpdatesFoundCallback(createMangaUpdates({ ids: updatedManga.updates }))
       }
     }
   }
@@ -248,8 +249,9 @@ export class MangaDex extends Source {
         artist: query.artist,
         status: query.status,
         hStatus: query.hStatus,
+        bypassFilter: true,
       }),
-      headers: { 
+      headers: {
         'content-type': 'application/json',
       },
     })
