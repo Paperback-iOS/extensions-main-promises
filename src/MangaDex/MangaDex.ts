@@ -38,10 +38,10 @@ const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API + '/chapter'
 const SEARCH_ENDPOINT = PAPERBACK_API + '/search'
 
 export const MangaDexInfo: SourceInfo = {
-  author: 'Faizan Durrani',
-  description: 'The default source for Papaerback, supports notifications',
+  author: 'Neko',
+  description: 'Overwrites SafeDex,unlocks all mangas MangaDex has to offer and loads slightly faster. supports notifications',
   icon: 'icon.png',
-  name: 'MangaDex Unlocked Promises',
+  name: 'MangaDex Unlocked',
   version: '2.0.1',
   authorWebsite: 'https://github.com/Pogogo007/extensions-main-promises',
   websiteBaseURL: MANGADEX_DOMAIN,
