@@ -42,7 +42,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
   name: 'SafeDex',
-  version: '2.0.0',
+  version: '2.0.1',
   authorWebsite: 'https://github.com/FaizanDurrani',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -125,8 +125,8 @@ export class MangaDex extends Source {
   }
 
   async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
-    const page = metadata.page ?? 1
-    const items = metadata.items ?? 50
+    const page = metadata?.page ?? 1
+    const items = metadata?.items ?? 50
 
     const request = this.constructSearchRequest(query, page, items)
 
