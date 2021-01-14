@@ -357,19 +357,28 @@ class MangaDex extends paperback_extensions_common_1.Source {
         return this.parser.parseMangaDetails(json)[0];
     }
     async getBatchMangaDetails(mangaIds) {
-        const request = createRequestObject({
-            url: MANGA_ENDPOINT,
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
-            data: JSON.stringify({
-                id: mangaIds.map(x => parseInt(x)),
-            }),
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        const json = JSON.parse(response.data);
-        return this.parser.parseMangaDetails(json);
+        let batchedIds;
+        const fetchedDetails = [];
+        // Get manga in 50 manga batches
+        const chunk = 50;
+        for (let i = 0; i < mangaIds.length; i += chunk) {
+            batchedIds = mangaIds.slice(i, i + chunk);
+            const request = createRequestObject({
+                url: MANGA_ENDPOINT,
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                data: JSON.stringify({
+                    id: batchedIds.map(x => parseInt(x)),
+                }),
+            });
+            // eslint-disable-next-line no-await-in-loop
+            const response = await this.requestManager.schedule(request, 1);
+            const json = JSON.parse(response.data);
+            fetchedDetails.concat(this.parser.parseMangaDetails(json));
+        }
+        return fetchedDetails;
     }
     async getChapters(mangaId) {
         const request = createRequestObject({
