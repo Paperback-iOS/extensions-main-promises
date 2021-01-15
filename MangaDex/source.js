@@ -320,7 +320,7 @@ exports.MangaDexInfo = {
     description: 'The default source for Papaerback, supports notifications',
     icon: 'icon.png',
     name: 'SafeDex',
-    version: '2.0.2',
+    version: '2.0.3',
     authorWebsite: 'https://github.com/FaizanDurrani',
     websiteBaseURL: MANGADEX_DOMAIN,
     hentaiSource: false,
@@ -376,9 +376,12 @@ class MangaDex extends paperback_extensions_common_1.Source {
             // eslint-disable-next-line no-await-in-loop
             const response = await this.requestManager.schedule(request, 1);
             const json = JSON.parse(response.data);
-            fetchedDetails.concat(this.parser.parseMangaDetails(json));
+            for (const manga of this.parser.parseMangaDetails(json)) {
+                fetchedDetails.push(manga);
+            }
         }
-        return fetchedDetails;
+        console.log(fetchedDetails);
+        return fetchedDetails !== null && fetchedDetails !== void 0 ? fetchedDetails : [];
     }
     async getChapters(mangaId) {
         const request = createRequestObject({
