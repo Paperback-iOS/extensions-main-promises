@@ -100,6 +100,7 @@ export class MangaDex extends Source {
         },
         data: JSON.stringify({
           id: batchedIds.map(x => parseInt(x)),
+          bypassFilter: true,
         }),
       })
 
