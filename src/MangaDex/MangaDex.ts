@@ -42,7 +42,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
   name: 'SafeDex',
-  version: '2.0.2',
+  version: '2.0.3',
   authorWebsite: 'https://github.com/FaizanDurrani',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -106,10 +106,13 @@ export class MangaDex extends Source {
       const response = await this.requestManager.schedule(request, 1)
       const json = JSON.parse(response.data) as any
 
-      fetchedDetails.concat(this.parser.parseMangaDetails(json))
+      for (const manga of this.parser.parseMangaDetails(json)) {
+        fetchedDetails.push(manga)
+      }
     }
 
-    return fetchedDetails
+    console.log(fetchedDetails)
+    return fetchedDetails ?? []
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
