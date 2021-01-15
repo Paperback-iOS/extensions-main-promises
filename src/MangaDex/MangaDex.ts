@@ -88,7 +88,7 @@ export class MangaDex extends Source {
     const fetchedDetails: Manga[] = []
 
     // Get manga in 50 manga batches
-    const chunk = 50
+    const chunk = 100
     for (let i = 0; i < mangaIds.length; i += chunk) {
       batchedIds = mangaIds.slice(i, i + chunk)
 
