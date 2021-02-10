@@ -62,6 +62,10 @@ export class MangaDex extends Source {
     requestsPerSecond: 2,
     requestTimeout: 10000,
   })
+  
+  getMangaShareUrl(mangaId: string): string {
+    return `${MANGADEX_DOMAIN}/manga/${mangaId}`
+  }
 
   async getMangaDetails(mangaId: string): Promise<Manga> {
     const request = createRequestObject({
