@@ -341,6 +341,9 @@ class MangaDex extends paperback_extensions_common_1.Source {
             requestTimeout: 10000,
         });
     }
+    getMangaShareUrl(mangaId) {
+        return `${MANGADEX_DOMAIN}/manga/${mangaId}`;
+    }
     async getMangaDetails(mangaId) {
         const request = createRequestObject({
             url: MANGA_ENDPOINT,
