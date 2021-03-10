@@ -310,10 +310,10 @@ catch (_a) {
 // to the beta/alpha version of the app
 const PAPERBACK_API = `https://${IS_BETA ? 'md-cacher.herokuapp.com' : 'api.paperback.moe'}`;
 const MANGADEX_DOMAIN = 'https://mangadex.org';
-const MANGADEX_API = MANGADEX_DOMAIN + '/api';
+const MANGADEX_API_V2 = 'https://api.mangadex.org/v2';
 const MANGA_ENDPOINT = PAPERBACK_API + '/manga';
-const CHAPTER_LIST_ENDPOINT = MANGADEX_API + '/manga';
-const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API + '/chapter';
+const CHAPTER_LIST_ENDPOINT = MANGADEX_API_V2 + '/manga';
+const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API_V2 + '/chapter';
 const SEARCH_ENDPOINT = PAPERBACK_API + '/search';
 exports.MangaDexInfo = {
     author: 'Faizan Durrani',
@@ -388,7 +388,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     }
     async getChapters(mangaId) {
         const request = createRequestObject({
-            url: `${CHAPTER_LIST_ENDPOINT}/${mangaId}`,
+            url: `${CHAPTER_LIST_ENDPOINT}/${mangaId}/chapters`,
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
@@ -397,13 +397,12 @@ class MangaDex extends paperback_extensions_common_1.Source {
     }
     async getChapterDetails(_mangaId, chapterId) {
         const request = createRequestObject({
-            url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}?mark_read=0`,
-            method: 'GET',
-            incognito: false,
+            url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}`,
+            method: 'GET'
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
-        return this.parser.parseChapterDetails(json);
+        return this.parser.parseChapterDetails(json.data);
     }
     async searchRequest(query, metadata) {
         var _a, _b;
@@ -584,28 +583,28 @@ class Parser {
         return mangas;
     }
     parseChapterList(mangaId, json) {
-        const chapters = json.chapter;
-        return Object.keys(chapters).map(id => {
-            const chapter = chapters[id];
-            const volume = Number(chapter.volume);
-            return createChapter({
-                id: id,
-                chapNum: Number(chapter.chapter),
-                langCode: chapter.lang_code,
-                volume: Number.isNaN(volume) ? 0 : volume,
+        let chapters = [];
+        const groups = Object.assign({}, ...json.data.groups.map((x) => ({ [x.id]: x.name })));
+        for (const chapter of json.data.chapters) {
+            chapters.push(createChapter({
+                id: chapter.id.toString(),
                 mangaId: mangaId,
-                group: chapter.group_name,
+                chapNum: Number(chapter.chapter),
+                langCode: chapter.language,
+                volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
+                group: chapter.groups.map((x) => groups[x]).join(', '),
                 name: chapter.title,
-                time: new Date(Number(chapter.timestamp) * 1000),
-            });
-        });
+                time: new Date(Number(chapter.timestamp) * 1000)
+            }));
+        }
+        return chapters;
     }
     parseChapterDetails(chapterDetails) {
         return createChapterDetails({
             id: chapterDetails.id.toString(),
-            longStrip: parseInt(chapterDetails.long_strip) === 1,
-            mangaId: chapterDetails.manga_id.toString(),
-            pages: chapterDetails.page_array.map((x) => `${chapterDetails.server}${chapterDetails.hash}/${x}`),
+            longStrip: false,
+            mangaId: chapterDetails.mangaId.toString(),
+            pages: chapterDetails.pages.map((x) => `${chapterDetails.server}${chapterDetails.hash}/${x}`),
         });
     }
     filterUpdatedManga($, referenceTime, allManga) {
