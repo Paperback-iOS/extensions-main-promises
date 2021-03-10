@@ -71,30 +71,32 @@ export class Parser {
   }
 
   parseChapterList(mangaId: string, json: any): Chapter[] {
-    const chapters = json.chapter as any
+    let chapters = []
+    const groups = Object.assign({}, ...json.data.groups.map((x: any) => ({[x.id]: x.name})))
 
-    return Object.keys(chapters).map(id => {
-      const chapter = chapters[id]
-      const volume = Number(chapter.volume)
-      return createChapter({
-        id: id,
-        chapNum: Number(chapter.chapter),
-        langCode: chapter.lang_code,
-        volume: Number.isNaN(volume) ? 0 : volume,
-        mangaId: mangaId,
-        group: chapter.group_name,
-        name: chapter.title,
-        time: new Date(Number(chapter.timestamp) * 1000),
-      })
-    })
+    for (const chapter of json.data.chapters) {
+      chapters.push(
+        createChapter({
+          id: chapter.id.toString(),
+          mangaId: mangaId,
+          chapNum: Number(chapter.chapter),
+          langCode: chapter.language,
+          volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
+          group: chapter.groups.map((x: any) => groups[x]).join(', '),
+          name: chapter.title,
+          time: new Date(Number(chapter.timestamp) * 1000)
+        })
+      )
+    }
+    return chapters
   }
 
   parseChapterDetails(chapterDetails: any): ChapterDetails {
     return createChapterDetails({
       id: chapterDetails.id.toString(),
-      longStrip: parseInt(chapterDetails.long_strip) === 1,
-      mangaId: chapterDetails.manga_id.toString(),
-      pages: chapterDetails.page_array.map(
+      longStrip: false,
+      mangaId: chapterDetails.mangaId.toString(),
+      pages: chapterDetails.pages.map(
         (x: string) => `${chapterDetails.server}${chapterDetails.hash}/${x}`,
       ),
     })

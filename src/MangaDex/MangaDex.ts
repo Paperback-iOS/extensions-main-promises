@@ -30,11 +30,11 @@ try {
 // to the beta/alpha version of the app
 const PAPERBACK_API = `https://${IS_BETA ? 'md-cacher.herokuapp.com' : 'api.paperback.moe'}`
 const MANGADEX_DOMAIN = 'https://mangadex.org'
-const MANGADEX_API = MANGADEX_DOMAIN + '/api'
+const MANGADEX_API_V2 = 'https://api.mangadex.org/v2'
 
 const MANGA_ENDPOINT = PAPERBACK_API + '/manga'
-const CHAPTER_LIST_ENDPOINT = MANGADEX_API + '/manga'
-const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API + '/chapter'
+const CHAPTER_LIST_ENDPOINT = MANGADEX_API_V2 + '/manga'
+const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API_V2 + '/chapter'
 const SEARCH_ENDPOINT = PAPERBACK_API + '/search'
 
 export const MangaDexInfo: SourceInfo = {
@@ -121,7 +121,7 @@ export class MangaDex extends Source {
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
     const request = createRequestObject({
-      url: `${CHAPTER_LIST_ENDPOINT}/${mangaId}`,
+      url: `${CHAPTER_LIST_ENDPOINT}/${mangaId}/chapters`,
       method: 'GET',
     })
 
@@ -133,15 +133,14 @@ export class MangaDex extends Source {
 
   async getChapterDetails(_mangaId: string, chapterId: string): Promise<ChapterDetails> {
     const request = createRequestObject({
-      url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}?mark_read=0`,
-      method: 'GET',
-      incognito: false,
+      url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}`,
+      method: 'GET'
     })
 
     const response = await this.requestManager.schedule(request, 1)
     const json = JSON.parse(response.data) as any
 
-    return this.parser.parseChapterDetails(json)
+    return this.parser.parseChapterDetails(json.data)
   }
 
   async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
