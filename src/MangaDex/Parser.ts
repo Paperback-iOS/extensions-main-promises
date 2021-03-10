@@ -70,6 +70,27 @@ export class Parser {
     return mangas
   }
 
+  parseChapterList(mangaId: string, json: any): Chapter[] {
+    let chapters = []
+    const groups = Object.assign({}, ...json.data.groups.map((x: any) => ({[x.id]: x.name})))
+
+    for (const chapter of json.data.chapters) {
+      chapters.push(
+        createChapter({
+          id: chapter.id.toString(),
+          mangaId: mangaId,
+          chapNum: Number(chapter.chapter),
+          langCode: chapter.language,
+          volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
+          group: chapter.groups.map((x: any) => groups[x]).join(', '),
+          name: chapter.title,
+          time: new Date(Number(chapter.timestamp) * 1000)
+        })
+      )
+    }
+    return chapters
+  }
+
   parseChapterDetails(chapterDetails: any): ChapterDetails {
     return createChapterDetails({
       id: chapterDetails.id.toString(),

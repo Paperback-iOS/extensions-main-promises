@@ -34,7 +34,6 @@ const MANGADEX_API_V2 = 'https://api.mangadex.org/v2'
 
 const MANGA_ENDPOINT = PAPERBACK_API + '/manga'
 const CHAPTER_LIST_ENDPOINT = MANGADEX_API_V2 + '/manga'
-const GROUP_ENDPOINT = MANGADEX_API_V2 + '/group'
 const CHAPTER_DETAILS_ENDPOINT = MANGADEX_API_V2 + '/chapter'
 const SEARCH_ENDPOINT = PAPERBACK_API + '/search'
 
@@ -129,41 +128,7 @@ export class MangaDex extends Source {
     const response = await this.requestManager.schedule(request, 1)
     const json = JSON.parse(response.data) as any
 
-    let chapters = []
-    let groupDict = {} as any
-
-    for (const chapter of json.data.chapters) {
-      let groupNames = []
-      for (const groupId of chapter.groups) {
-        if (groupDict[groupId] !== undefined) {
-          groupNames.push(groupDict[groupId])
-        }
-        else {
-          const request = createRequestObject({
-            url: `${GROUP_ENDPOINT}/${groupId}`,
-            method: 'GET',
-          })
-    
-          const response = await this.requestManager.schedule(request, 1)
-          const json = JSON.parse(response.data) as any
-          groupDict[groupId] = json.data.name
-          groupNames.push(json.data.name)
-      }
-      }
-      chapters.push(
-        createChapter({
-          id: chapter.id.toString(),
-          mangaId: mangaId,
-          chapNum: Number(chapter.chapter),
-          langCode: chapter.language,
-          volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
-          group: groupNames.join(', '),
-          name: chapter.title,
-          time: new Date(Number(chapter.timestamp) * 1000)
-        })
-      )
-    }
-    return chapters
+    return this.parser.parseChapterList(mangaId, json)
   }
 
   async getChapterDetails(_mangaId: string, chapterId: string): Promise<ChapterDetails> {
