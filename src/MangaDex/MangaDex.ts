@@ -11,6 +11,7 @@ import {
   LanguageCode,
   TagType,
   MangaUpdates,
+  Request,
 } from 'paperback-extensions-common'
 
 import {
@@ -42,7 +43,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
   name: 'SafeDex',
-  version: '2.0.3',
+  version: '2.0.4',
   authorWebsite: 'https://github.com/FaizanDurrani',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -267,6 +268,30 @@ export class MangaDex extends Source {
       }),
       headers: {
         'content-type': 'application/json',
+      },
+    })
+  }
+
+  async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults | null> {
+    const requests: {[x: string]: Request} = {
+      shounen: this.constructSearchRequest({
+        includeDemographic: ['1'],
+      }, metadata?.page ?? 1, 50),
+      action: this.constructSearchRequest({
+        includeGenre: ['2'],
+      }, metadata?.page ?? 1, 50),
+    }
+
+    const request = requests[homepageSectionId]
+
+    const response = await this.requestManager.schedule(request, 1)
+    const json = JSON.parse(response.data) as any
+    const tiles = this.parser.parseMangaTiles(json)
+
+    return createPagedResults({
+      results: tiles,
+      metadata: {
+        page: (metadata?.page ?? 1) + 1,
       },
     })
   }
