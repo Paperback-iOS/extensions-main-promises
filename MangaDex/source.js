@@ -320,7 +320,7 @@ exports.MangaDexInfo = {
     description: 'The default source for Papaerback, supports notifications',
     icon: 'icon.png',
     name: 'SafeDex',
-    version: '2.0.4',
+    version: '2.0.6',
     authorWebsite: 'https://github.com/FaizanDurrani',
     websiteBaseURL: MANGADEX_DOMAIN,
     hentaiSource: false,
@@ -398,7 +398,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     async getChapterDetails(_mangaId, chapterId) {
         const request = createRequestObject({
             url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}`,
-            method: 'GET'
+            method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
@@ -516,6 +516,27 @@ class MangaDex extends paperback_extensions_common_1.Source {
             }),
             headers: {
                 'content-type': 'application/json',
+            },
+        });
+    }
+    async getViewMoreItems(homepageSectionId, metadata) {
+        var _a, _b, _c;
+        const requests = {
+            shounen: this.constructSearchRequest({
+                includeDemographic: ['1'],
+            }, (_a = metadata === null || metadata === void 0 ? void 0 : metadata.page) !== null && _a !== void 0 ? _a : 1, 50),
+            action: this.constructSearchRequest({
+                includeGenre: ['2'],
+            }, (_b = metadata === null || metadata === void 0 ? void 0 : metadata.page) !== null && _b !== void 0 ? _b : 1, 50),
+        };
+        const request = requests[homepageSectionId];
+        const response = await this.requestManager.schedule(request, 1);
+        const json = JSON.parse(response.data);
+        const tiles = this.parser.parseMangaTiles(json);
+        return createPagedResults({
+            results: tiles,
+            metadata: {
+                page: ((_c = metadata === null || metadata === void 0 ? void 0 : metadata.page) !== null && _c !== void 0 ? _c : 1) + 1,
             },
         });
     }
