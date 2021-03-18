@@ -320,7 +320,7 @@ exports.MangaDexInfo = {
     description: 'The default source for Papaerback, supports notifications',
     icon: 'icon.png',
     name: 'SafeDex',
-    version: '2.0.3',
+    version: '2.0.4',
     authorWebsite: 'https://github.com/FaizanDurrani',
     websiteBaseURL: MANGADEX_DOMAIN,
     hentaiSource: false,
@@ -591,7 +591,7 @@ class Parser {
                 mangaId: mangaId,
                 chapNum: Number(chapter.chapter),
                 langCode: chapter.language,
-                volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
+                volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
                 group: chapter.groups.map((x) => groups[x]).join(', '),
                 name: chapter.title,
                 time: new Date(Number(chapter.timestamp) * 1000)
