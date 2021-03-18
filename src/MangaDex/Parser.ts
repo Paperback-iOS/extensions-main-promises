@@ -81,7 +81,7 @@ export class Parser {
           mangaId: mangaId,
           chapNum: Number(chapter.chapter),
           langCode: chapter.language,
-          volume: Number.isNaN(chapter.volume) ? 0 : chapter.volume,
+          volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
           group: chapter.groups.map((x: any) => groups[x]).join(', '),
           name: chapter.title,
           time: new Date(Number(chapter.timestamp) * 1000)
