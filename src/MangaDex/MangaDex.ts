@@ -60,8 +60,8 @@ export class MangaDex extends Source {
   parser = new Parser()
 
   requestManager = createRequestManager({
-    requestsPerSecond: 2,
-    requestTimeout: 10000,
+    requestsPerSecond: 1,
+    requestTimeout: 15000,
   })
 
   getMangaShareUrl(mangaId: string): string {
