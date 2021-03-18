@@ -43,7 +43,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
   name: 'SafeDex',
-  version: '2.0.4',
+  version: '2.0.6',
   authorWebsite: 'https://github.com/FaizanDurrani',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -63,7 +63,7 @@ export class MangaDex extends Source {
     requestsPerSecond: 2,
     requestTimeout: 10000,
   })
-  
+
   getMangaShareUrl(mangaId: string): string {
     return `${MANGADEX_DOMAIN}/manga/${mangaId}`
   }
@@ -135,7 +135,7 @@ export class MangaDex extends Source {
   async getChapterDetails(_mangaId: string, chapterId: string): Promise<ChapterDetails> {
     const request = createRequestObject({
       url: `${CHAPTER_DETAILS_ENDPOINT}/${chapterId}`,
-      method: 'GET'
+      method: 'GET',
     })
 
     const response = await this.requestManager.schedule(request, 1)
