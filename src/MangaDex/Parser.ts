@@ -1,6 +1,7 @@
 /* eslint-disable camelcase, @typescript-eslint/explicit-module-boundary-types, radix, unicorn/filename-case */
 
 import {Manga, Chapter, ChapterDetails, MangaTile} from 'paperback-extensions-common'
+const MANGAPLUS_GROUP_ID = 9097
 
 export class Parser {
   parseMangaDetails(json: any): Manga[] {
@@ -75,18 +76,19 @@ export class Parser {
     const groups = Object.assign({}, ...json.data.groups.map((x: any) => ({[x.id]: x.name})))
 
     for (const chapter of json.data.chapters) {
-      chapters.push(
-        createChapter({
-          id: chapter.id.toString(),
-          mangaId: mangaId,
-          chapNum: Number(chapter.chapter),
-          langCode: chapter.language,
-          volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
-          group: chapter.groups.map((x: any) => groups[x]).join(', '),
-          name: chapter.title,
-          time: new Date(Number(chapter.timestamp) * 1000)
-        })
-      )
+      if (!chapter.groups.includes(MANGAPLUS_GROUP_ID))
+        {chapters.push(
+          createChapter({
+            id: chapter.id.toString(),
+            mangaId: mangaId,
+            chapNum: Number(chapter.chapter),
+            langCode: chapter.language,
+            volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
+            group: chapter.groups.map((x: any) => groups[x]).join(', '),
+            name: chapter.title,
+            time: new Date(Number(chapter.timestamp) * 1000)
+          })
+        )}
     }
     return chapters
   }
