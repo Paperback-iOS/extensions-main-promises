@@ -320,7 +320,7 @@ exports.MangaDexInfo = {
     description: 'The default source for Papaerback, supports notifications',
     icon: 'icon.png',
     name: 'SafeDex',
-    version: '2.0.7',
+    version: '2.0.8',
     authorWebsite: 'https://github.com/FaizanDurrani',
     websiteBaseURL: MANGADEX_DOMAIN,
     hentaiSource: false,
@@ -548,6 +548,7 @@ exports.MangaDex = MangaDex;
 /* eslint-disable camelcase, @typescript-eslint/explicit-module-boundary-types, radix, unicorn/filename-case */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
+const MANGAPLUS_GROUP_ID = 9097;
 class Parser {
     parseMangaDetails(json) {
         var _a;
@@ -607,16 +608,18 @@ class Parser {
         let chapters = [];
         const groups = Object.assign({}, ...json.data.groups.map((x) => ({ [x.id]: x.name })));
         for (const chapter of json.data.chapters) {
-            chapters.push(createChapter({
-                id: chapter.id.toString(),
-                mangaId: mangaId,
-                chapNum: Number(chapter.chapter),
-                langCode: chapter.language,
-                volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
-                group: chapter.groups.map((x) => groups[x]).join(', '),
-                name: chapter.title,
-                time: new Date(Number(chapter.timestamp) * 1000)
-            }));
+            if (!chapter.groups.includes(MANGAPLUS_GROUP_ID)) {
+                chapters.push(createChapter({
+                    id: chapter.id.toString(),
+                    mangaId: mangaId,
+                    chapNum: Number(chapter.chapter),
+                    langCode: chapter.language,
+                    volume: Number.isNaN(chapter.volume) ? 0 : Number(chapter.volume),
+                    group: chapter.groups.map((x) => groups[x]).join(', '),
+                    name: chapter.title,
+                    time: new Date(Number(chapter.timestamp) * 1000)
+                }));
+            }
         }
         return chapters;
     }
