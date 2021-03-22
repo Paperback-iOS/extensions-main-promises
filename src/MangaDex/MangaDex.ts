@@ -43,7 +43,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'The default source for Papaerback, supports notifications',
   icon: 'icon.png',
   name: 'SafeDex',
-  version: '2.0.7',
+  version: '2.0.8',
   authorWebsite: 'https://github.com/FaizanDurrani',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
