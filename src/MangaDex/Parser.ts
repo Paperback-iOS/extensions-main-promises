@@ -108,8 +108,8 @@ export class Parser {
     console.log(`REFERENCE TIME: ${referenceTime}`)
 
     const ids: string[] = []
-
-    for (const elem of $('.manga-entry').toArray()) {
+    const entries = $('.manga-entry').toArray()
+    for (const elem of entries) {
       const id = elem.attribs['data-id']
       const mangaDate = new Date(
         ($(elem).find('time').attr('datetime') ?? '').replace(/-/g, '/'),
@@ -127,7 +127,7 @@ export class Parser {
     }
 
     console.log(`Found ${ids.length} updates`)
-    return {updates: ids, hasMore: true}
+    return {updates: ids, hasMore: entries.length > 0}
   }
 
   parseMangaTiles(json: any): MangaTile[] {
