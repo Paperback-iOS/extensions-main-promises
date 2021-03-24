@@ -320,7 +320,7 @@ exports.MangaDexInfo = {
     description: 'The default source for Papaerback, supports notifications',
     icon: 'icon.png',
     name: 'SafeDex',
-    version: '2.0.8',
+    version: '2.0.9',
     authorWebsite: 'https://github.com/FaizanDurrani',
     websiteBaseURL: MANGADEX_DOMAIN,
     hentaiSource: false,
@@ -635,7 +635,8 @@ class Parser {
         var _a;
         console.log(`REFERENCE TIME: ${referenceTime}`);
         const ids = [];
-        for (const elem of $('.manga-entry').toArray()) {
+        const entries = $('.manga-entry').toArray();
+        for (const elem of entries) {
             const id = elem.attribs['data-id'];
             const mangaDate = new Date(((_a = $(elem).find('time').attr('datetime')) !== null && _a !== void 0 ? _a : '').replace(/-/g, '/'));
             console.log(`${id} updated at ${mangaDate}}`);
@@ -650,7 +651,7 @@ class Parser {
             }
         }
         console.log(`Found ${ids.length} updates`);
-        return { updates: ids, hasMore: true };
+        return { updates: ids, hasMore: entries.length > 0 };
     }
     parseMangaTiles(json) {
         var _a;
