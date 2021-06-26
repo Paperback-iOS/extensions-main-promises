@@ -18,7 +18,7 @@ import {
 import {reverseLangCode} from './Languages'
 
 export const PaperbackInfo: SourceInfo = {
-  version: '2.0.0',
+  version: '2.0.1',
   name: 'Paperback',
   icon: 'icon.png',
   author: 'Lemon & Faizan Durrani',
