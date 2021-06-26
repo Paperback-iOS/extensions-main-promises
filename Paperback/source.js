@@ -346,7 +346,7 @@ exports.Paperback = exports.parseMangaStatus = exports.PaperbackInfo = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Languages_1 = require("./Languages");
 exports.PaperbackInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'Paperback',
     icon: 'icon.png',
     author: 'Lemon & Faizan Durrani',
@@ -379,6 +379,44 @@ class Paperback extends paperback_extensions_common_1.Source {
         this.requestManager = createRequestManager({
             requestsPerSecond: 4, requestTimeout: 60000
         });
+        // async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+        //   const komgaAPI = await this.getKomgaAPI()
+        //   // We make requests of PAGE_SIZE titles to `series/updated/` until we got every titles
+        //   // or we got a title which `lastModified` metadata is older than `time`
+        //   let page = 0
+        //   const foundIds: string[] = []
+        //   let loadMore = true
+        //   while (loadMore) {
+        //     const request = createRequestObject({
+        //       url: `${komgaAPI}/series/updated/`,
+        //       param: `?page=${page}&size=${PAGE_SIZE}`,
+        //       method: 'GET',
+        //     })
+        //     const data = await this.requestManager.schedule(request, 1)
+        //     const result = (typeof data.data) === 'string' ? JSON.parse(data.data) : data.data
+        //     for (const serie of result.content) {
+        //       const serieUpdated = new Date(serie.metadata.lastModified)
+        //       if (serieUpdated >= time) {
+        //         if (ids.includes(serie)) {
+        //           foundIds.push(serie)
+        //         }
+        //       } else {
+        //         loadMore = false
+        //         break
+        //       }
+        //     }
+        //     // If no series were returned we are on the last page
+        //     if (result.content.length === 0) {
+        //       loadMore = false
+        //     }
+        //     page += 1
+        //     if (foundIds.length > 0) {
+        //       mangaUpdatesFoundCallback(createMangaUpdates({
+        //         ids: foundIds,
+        //       }))
+        //     }
+        //   }
+        // }
     }
     createKomgaAPI(serverAddress) {
         return serverAddress + (serverAddress.slice(-1) === '/' ? 'api/v1' : '/api/v1');
@@ -609,45 +647,6 @@ class Paperback extends paperback_extensions_common_1.Source {
             results: tiles,
             metadata: metadata,
         });
-    }
-    async filterUpdatedManga(mangaUpdatesFoundCallback, time, ids) {
-        const komgaAPI = await this.getKomgaAPI();
-        // We make requests of PAGE_SIZE titles to `series/updated/` until we got every titles
-        // or we got a title which `lastModified` metadata is older than `time`
-        let page = 0;
-        const foundIds = [];
-        let loadMore = true;
-        while (loadMore) {
-            const request = createRequestObject({
-                url: `${komgaAPI}/series/updated/`,
-                param: `?page=${page}&size=${PAGE_SIZE}`,
-                method: 'GET',
-            });
-            const data = await this.requestManager.schedule(request, 1);
-            const result = (typeof data.data) === 'string' ? JSON.parse(data.data) : data.data;
-            for (const serie of result.content) {
-                const serieUpdated = new Date(serie.metadata.lastModified);
-                if (serieUpdated >= time) {
-                    if (ids.includes(serie)) {
-                        foundIds.push(serie);
-                    }
-                }
-                else {
-                    loadMore = false;
-                    break;
-                }
-            }
-            // If no series were returned we are on the last page
-            if (result.content.length === 0) {
-                loadMore = false;
-            }
-            page += 1;
-            if (foundIds.length > 0) {
-                mangaUpdatesFoundCallback(createMangaUpdates({
-                    ids: foundIds,
-                }));
-            }
-        }
     }
 }
 exports.Paperback = Paperback;
