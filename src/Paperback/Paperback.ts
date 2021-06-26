@@ -57,7 +57,7 @@ export class Paperback extends Source {
     return Promise.resolve(this.createKomgaAPI(komgaAPI))
   }
 
-  override requestManager = createRequestManager({
+  requestManager = createRequestManager({
     requestsPerSecond: 4, requestTimeout: 60000
   })
 
@@ -248,7 +248,7 @@ export class Paperback extends Source {
     })
   }
 
-  override async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+  async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
     const komgaAPI = await this.getKomgaAPI()
 
     // The source define two homepage sections: new and latest
@@ -302,7 +302,7 @@ export class Paperback extends Source {
     await Promise.all(promises)
   }
 
-  override async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
+  async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
     const komgaAPI = await this.getKomgaAPI()
     const page: number = metadata?.page ?? 0
 
@@ -334,50 +334,50 @@ export class Paperback extends Source {
     })
   }
 
-  override async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
-    const komgaAPI = await this.getKomgaAPI()
+  // async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+  //   const komgaAPI = await this.getKomgaAPI()
 
-    // We make requests of PAGE_SIZE titles to `series/updated/` until we got every titles
-    // or we got a title which `lastModified` metadata is older than `time`
-    let page = 0
-    const foundIds: string[] = []
-    let loadMore = true
+  //   // We make requests of PAGE_SIZE titles to `series/updated/` until we got every titles
+  //   // or we got a title which `lastModified` metadata is older than `time`
+  //   let page = 0
+  //   const foundIds: string[] = []
+  //   let loadMore = true
 
-    while (loadMore) {
-      const request = createRequestObject({
-        url: `${komgaAPI}/series/updated/`,
-        param: `?page=${page}&size=${PAGE_SIZE}`,
-        method: 'GET',
-      })
+  //   while (loadMore) {
+  //     const request = createRequestObject({
+  //       url: `${komgaAPI}/series/updated/`,
+  //       param: `?page=${page}&size=${PAGE_SIZE}`,
+  //       method: 'GET',
+  //     })
 
-      const data = await this.requestManager.schedule(request, 1)
-      const result = (typeof data.data) === 'string' ? JSON.parse(data.data) : data.data
+  //     const data = await this.requestManager.schedule(request, 1)
+  //     const result = (typeof data.data) === 'string' ? JSON.parse(data.data) : data.data
 
-      for (const serie of result.content) {
-        const serieUpdated = new Date(serie.metadata.lastModified)
+  //     for (const serie of result.content) {
+  //       const serieUpdated = new Date(serie.metadata.lastModified)
 
-        if (serieUpdated >= time) {
-          if (ids.includes(serie)) {
-            foundIds.push(serie)
-          }
-        } else {
-          loadMore = false
-          break
-        }
-      }
+  //       if (serieUpdated >= time) {
+  //         if (ids.includes(serie)) {
+  //           foundIds.push(serie)
+  //         }
+  //       } else {
+  //         loadMore = false
+  //         break
+  //       }
+  //     }
 
-      // If no series were returned we are on the last page
-      if (result.content.length === 0) {
-        loadMore = false
-      }
+  //     // If no series were returned we are on the last page
+  //     if (result.content.length === 0) {
+  //       loadMore = false
+  //     }
 
-      page += 1
+  //     page += 1
 
-      if (foundIds.length > 0) {
-        mangaUpdatesFoundCallback(createMangaUpdates({
-          ids: foundIds,
-        }))
-      }
-    }
-  }
+  //     if (foundIds.length > 0) {
+  //       mangaUpdatesFoundCallback(createMangaUpdates({
+  //         ids: foundIds,
+  //       }))
+  //     }
+  //   }
+  // }
 }
