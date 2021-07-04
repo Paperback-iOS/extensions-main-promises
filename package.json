@@ -1,7 +1,9 @@
 {
   "name": "extensions-main",
   "version": "1.0.0",
+  "repositoryName": "Extensions Main",
   "description": "The default source for Paperback, MangaDex",
+  "noAddToPaperbackButton": true,
   "main": "index.js",
   "scripts": {
     "start": "tsc && node dist/api.js",
