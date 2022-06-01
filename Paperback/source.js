@@ -2402,7 +2402,7 @@ exports.getServerUnavailableMangaTiles = getServerUnavailableMangaTiles;
 async function searchRequest(searchQuery, metadata, requestManager, stateManager, page_size) {
     // This function is also called when the user search in an other source. It should not throw if the server is unavailable.
     // We won't use `await this.getKomgaAPI()` as we do not want to throw an error
-    const komgaAPI = await stateManager.retrieve("komgaAPI");
+    const komgaAPI = await getKomgaAPI(stateManager);
     if (komgaAPI === null) {
         console.log("searchRequest failed because server settings are unset");
         return createPagedResults({
@@ -2590,7 +2590,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.2",
+    version: "1.2.3",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
