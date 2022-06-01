@@ -53,7 +53,7 @@ import {
 //  - search method which is called even if the user search in an other source
 
 export const PaperbackInfo: SourceInfo = {
-    version: "1.2.2",
+    version: "1.2.3",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",

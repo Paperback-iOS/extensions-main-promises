@@ -28,7 +28,7 @@ export async function searchRequest(
     // This function is also called when the user search in an other source. It should not throw if the server is unavailable.
 
     // We won't use `await this.getKomgaAPI()` as we do not want to throw an error
-    const komgaAPI = await stateManager.retrieve("komgaAPI");
+    const komgaAPI = await getKomgaAPI(stateManager);
 
     if (komgaAPI === null) {
         console.log("searchRequest failed because server settings are unset");
