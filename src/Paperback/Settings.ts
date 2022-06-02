@@ -103,8 +103,11 @@ export const serverSettingsMenu = (
                             value: values.serverUsername,
                             maskInput: false,
                         }),
+                        // TS-Ignoring because this isnt documented yet
+                        // Fallback to default input field if the app version doesnt support
+                        // SecureInputField
                         // @ts-ignore
-                        createSecureInputField({
+                        (createSecureInputField ?? createInputField)({
                             id: "serverPassword",
                             label: "Password",
                             placeholder: "Some Super Secret Password",
