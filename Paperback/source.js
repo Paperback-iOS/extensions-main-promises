@@ -2470,7 +2470,7 @@ const DEFAULT_KOMGA_API = DEFAULT_KOMGA_SERVER_ADDRESS + '/api/v1';
 const DEFAULT_KOMGA_USERNAME = '';
 const DEFAULT_KOMGA_PASSWORD = '';
 async function getAuthorizationString(stateManager) {
-    return await stateManager.retrieve('authorization') ?? '';
+    return await stateManager.keychain.retrieve('authorization') ?? '';
 }
 exports.getAuthorizationString = getAuthorizationString;
 async function getKomgaAPI(stateManager) {
@@ -2481,13 +2481,9 @@ async function retrieveStateData(stateManager) {
     // Return serverURL, serverUsername and serverPassword saved in the source.
     // Used to show already saved data in settings
     const serverURL = await stateManager.retrieve('serverAddress') ?? DEFAULT_KOMGA_SERVER_ADDRESS;
-    const serverUsername = await stateManager.retrieve('serverUsername') ?? DEFAULT_KOMGA_USERNAME;
-    const serverPassword = await stateManager.retrieve('serverPassword') ?? DEFAULT_KOMGA_PASSWORD;
-    return {
-        serverURL: serverURL,
-        serverUsername: serverUsername,
-        serverPassword: serverPassword
-    };
+    const serverUsername = await stateManager.keychain.retrieve('serverUsername') ?? DEFAULT_KOMGA_USERNAME;
+    const serverPassword = await stateManager.keychain.retrieve('serverPassword') ?? DEFAULT_KOMGA_PASSWORD;
+    return { serverURL, serverUsername, serverPassword };
 }
 exports.retrieveStateData = retrieveStateData;
 async function setStateData(stateManager, data) {
@@ -2496,7 +2492,8 @@ async function setStateData(stateManager, data) {
 }
 exports.setStateData = setStateData;
 async function setKomgaServerAddress(stateManager, apiUri) {
-    stateManager.store('komgaAPI', createKomgaAPI(apiUri));
+    await stateManager.store('serverAddress', apiUri);
+    await stateManager.store('komgaAPI', createKomgaAPI(apiUri));
 }
 async function setCredentials(stateManager, username, password) {
     await stateManager.keychain.store('serverUsername', username);
@@ -2590,7 +2587,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.3",
+    version: "1.2.4",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
