@@ -3026,8 +3026,8 @@ const serverSettingsMenu = (stateManager) => {
                     header: undefined,
                     rows: async () => [
                         createMultilineLabel({
-                            label: "Information",
-                            value: "A demonstration server is available on:\nhttps://komga.org/guides/#demo\n\nMinimal Komga version: v0.100.0",
+                            label: "Demo Server",
+                            value: "Server URL: https://demo.komga.org\nUsername: demo@komga.org\nPassword: komga-demo\n\nNote: Values are case-sensitive.",
                             id: "description",
                         }),
                     ],
@@ -3035,6 +3035,7 @@ const serverSettingsMenu = (stateManager) => {
                 createSection({
                     id: "serverSettings",
                     header: "Server Settings",
+                    footer: "Minimal Komga version: v0.100.0",
                     rows: async () => (0, Common_1.retrieveStateData)(stateManager).then((values) => [
                         createInputField({
                             id: "serverAddress",
@@ -3045,17 +3046,17 @@ const serverSettingsMenu = (stateManager) => {
                         }),
                         createInputField({
                             id: "serverUsername",
-                            label: "Username",
-                            placeholder: "AnimeLover420",
+                            label: "Email",
+                            placeholder: "demo@komga.org",
                             value: values.serverUsername,
                             maskInput: false,
                         }),
-                        createInputField({
+                        // @ts-ignore
+                        createSecureInputField({
                             id: "serverPassword",
                             label: "Password",
                             placeholder: "Some Super Secret Password",
-                            value: values.serverPassword,
-                            maskInput: true,
+                            value: values.serverPassword
                         }),
                     ]),
                 }),
