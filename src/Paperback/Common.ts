@@ -111,7 +111,7 @@ const DEFAULT_KOMGA_USERNAME = ''
 const DEFAULT_KOMGA_PASSWORD = ''
 
 export async function getAuthorizationString(stateManager: SourceStateManager): Promise<string> {
-    return (await stateManager.retrieve('authorization') as string | undefined) ?? ''
+    return (await stateManager.keychain.retrieve('authorization') as string | undefined) ?? ''
 }
 
 export async function getKomgaAPI(stateManager: SourceStateManager): Promise<string> {
@@ -123,13 +123,10 @@ export async function retrieveStateData(stateManager: SourceStateManager) {
     // Used to show already saved data in settings
 
     const serverURL = (await stateManager.retrieve('serverAddress') as string) ?? DEFAULT_KOMGA_SERVER_ADDRESS
-    const serverUsername = (await stateManager.retrieve('serverUsername') as string) ?? DEFAULT_KOMGA_USERNAME
-    const serverPassword = (await stateManager.retrieve('serverPassword') as string) ?? DEFAULT_KOMGA_PASSWORD
-    return {
-        serverURL: serverURL,
-        serverUsername: serverUsername,
-        serverPassword: serverPassword
-    }
+    const serverUsername = (await stateManager.keychain.retrieve('serverUsername') as string) ?? DEFAULT_KOMGA_USERNAME
+    const serverPassword = (await stateManager.keychain.retrieve('serverPassword') as string) ?? DEFAULT_KOMGA_PASSWORD
+
+    return { serverURL, serverUsername, serverPassword }
 }
 
 export async function setStateData(stateManager: SourceStateManager, data: Record<string, string>) {
@@ -145,7 +142,8 @@ export async function setStateData(stateManager: SourceStateManager, data: Recor
 }
 
 async function setKomgaServerAddress(stateManager: SourceStateManager, apiUri: string) {
-    stateManager.store('komgaAPI', createKomgaAPI(apiUri))
+    await stateManager.store('serverAddress', apiUri)
+    await stateManager.store('komgaAPI', createKomgaAPI(apiUri))
 }
 
 async function setCredentials(stateManager: SourceStateManager, username: string, password: string) {
