@@ -166,10 +166,10 @@ export class Paperback extends Source {
         // - `library`
         // To be able to make the difference between theses types, we append `genre-` or `tag-` at the beginning of the tag id
 
-        let genresResponse: Response;
-        let tagsResponse: Response;
-        let collectionResponse: Response;
-        let libraryResponse: Response;
+        let genresResponse: Response,
+            tagsResponse: Response,
+            collectionResponse: Response,
+            libraryResponse: Response;
 
         // We try to make the requests. If this fail, we return a placeholder tags list to inform the user and prevent the function from throwing an error
         try {
