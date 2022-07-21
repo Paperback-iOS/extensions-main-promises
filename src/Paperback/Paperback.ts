@@ -53,7 +53,7 @@ import {
 //  - search method which is called even if the user search in an other source
 
 export const PaperbackInfo: SourceInfo = {
-    version: "1.2.4",
+    version: "1.2.5",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -318,10 +318,12 @@ export class Paperback extends Source {
                 createChapter({
                     id: book.id,
                     mangaId: mangaId,
-                    chapNum: book.metadata.numberSort,
+                    chapNum: parseFloat(book.metadata.number),
                     langCode: languageCode,
-                    name: `${book.metadata.number} - ${book.metadata.title} (${book.size})`,
+                    name: `${book.metadata.title} (${book.size})`,
                     time: new Date(book.fileLastModified),
+                    // @ts-ignore
+                    sortingIndex: book.metadata.numberSort
                 })
             );
         }
