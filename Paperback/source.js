@@ -2587,7 +2587,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.4",
+    version: "1.2.5",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -2794,10 +2794,12 @@ class Paperback extends paperback_extensions_common_1.Source {
             chapters.push(createChapter({
                 id: book.id,
                 mangaId: mangaId,
-                chapNum: book.metadata.numberSort,
+                chapNum: parseFloat(book.metadata.number),
                 langCode: languageCode,
-                name: `${book.metadata.number} - ${book.metadata.title} (${book.size})`,
+                name: `${book.metadata.title} (${book.size})`,
                 time: new Date(book.fileLastModified),
+                // @ts-ignore
+                sortingIndex: book.metadata.numberSort
             }));
         }
         return chapters;
