@@ -2423,6 +2423,12 @@ async function searchRequest(searchQuery, metadata, requestManager, stateManager
             if (tag.id.substr(0, 6) == "genre-") {
                 paramsList.push("genre=" + encodeURIComponent(tag.id.substring(6)));
             }
+            if (tag.id.substr(0, 11) == "collection-") {
+                paramsList.push("collection_id=" + encodeURIComponent(tag.id.substring(11)));
+            }
+            if (tag.id.substr(0, 8) == "library-") {
+                paramsList.push("library_id=" + encodeURIComponent(tag.id.substring(8)));
+            }
         });
     }
     let paramsString = "";
@@ -2587,7 +2593,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.5",
+    version: "1.2.6",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -2675,13 +2681,13 @@ class Paperback extends paperback_extensions_common_1.Source {
     }
     async getTags() {
         // This function is called on the homepage and should not throw if the server is unavailable
-        // We define two types of tags:
+        // We define four types of tags:
         // - `genre`
         // - `tag`
+        // - `collection`
+        // - `library`
         // To be able to make the difference between theses types, we append `genre-` or `tag-` at the beginning of the tag id
-        // TODO: we could add: collections
-        let genresResponse;
-        let tagsResponse;
+        let genresResponse, tagsResponse, collectionResponse, libraryResponse;
         // We try to make the requests. If this fail, we return a placeholder tags list to inform the user and prevent the function from throwing an error
         try {
             const komgaAPI = await (0, Common_1.getKomgaAPI)(this.stateManager);
@@ -2695,6 +2701,16 @@ class Paperback extends paperback_extensions_common_1.Source {
                 method: "GET",
             });
             tagsResponse = await this.requestManager.schedule(tagsRequest, 1);
+            const collectionRequest = createRequestObject({
+                url: `${komgaAPI}/collections/`,
+                method: "GET",
+            });
+            collectionResponse = await this.requestManager.schedule(collectionRequest, 1);
+            const libraryRequest = createRequestObject({
+                url: `${komgaAPI}/libraries/`,
+                method: "GET",
+            });
+            libraryResponse = await this.requestManager.schedule(libraryRequest, 1);
         }
         catch (error) {
             console.log(`getTags failed with error: ${error}`);
@@ -2709,13 +2725,23 @@ class Paperback extends paperback_extensions_common_1.Source {
         const tagsResult = typeof tagsResponse.data === "string"
             ? JSON.parse(tagsResponse.data)
             : tagsResponse.data;
+        const collectionResult = typeof collectionResponse.data === "string"
+            ? JSON.parse(collectionResponse.data)
+            : collectionResponse.data;
+        const libraryResult = typeof libraryResponse.data === "string"
+            ? JSON.parse(libraryResponse.data)
+            : libraryResponse.data;
         const tagSections = [
             createTagSection({ id: "0", label: "genres", tags: [] }),
             createTagSection({ id: "1", label: "tags", tags: [] }),
+            createTagSection({ id: "2", label: "collections", tags: [] }),
+            createTagSection({ id: "3", label: "libraries", tags: [] }),
         ];
         // For each tag, we append a type identifier to its id and capitalize its label
         tagSections[0].tags = genresResult.map((elem) => createTag({ id: "genre-" + elem, label: (0, exports.capitalize)(elem) }));
         tagSections[1].tags = tagsResult.map((elem) => createTag({ id: "tag-" + elem, label: (0, exports.capitalize)(elem) }));
+        tagSections[2].tags = collectionResult.content.map((elem) => createTag({ id: "collection-" + elem.id, label: (0, exports.capitalize)(elem.name) }));
+        tagSections[3].tags = libraryResult.map((elem) => createTag({ id: "library-" + elem.id, label: (0, exports.capitalize)(elem.name) }));
         return tagSections;
     }
     async getMangaDetails(mangaId) {
@@ -2864,13 +2890,18 @@ class Paperback extends paperback_extensions_common_1.Source {
         // The source define two homepage sections: new and latest
         const sections = [
             createHomeSection({
-                id: "new",
-                title: "Recently added series",
+                id: 'ondeck',
+                title: 'On Deck',
+                view_more: false,
+            }),
+            createHomeSection({
+                id: 'new',
+                title: 'Recently added series',
                 view_more: true,
             }),
             createHomeSection({
-                id: "updated",
-                title: "Recently updated series",
+                id: 'updated',
+                title: 'Recently updated series',
                 view_more: true,
             }),
         ];
@@ -2878,8 +2909,15 @@ class Paperback extends paperback_extensions_common_1.Source {
         for (const section of sections) {
             // Let the app load empty tagSections
             sectionCallback(section);
+            let apiPath;
+            if (section.id === 'ondeck') {
+                apiPath = `${komgaAPI}/books/${section.id}`;
+            }
+            else {
+                apiPath = `${komgaAPI}/series/${section.id}`;
+            }
             const request = createRequestObject({
-                url: `${komgaAPI}/series/${section.id}`,
+                url: apiPath,
                 param: "?page=0&size=20&deleted=false",
                 method: "GET",
             });
@@ -2889,9 +2927,9 @@ class Paperback extends paperback_extensions_common_1.Source {
                 const tiles = [];
                 for (const serie of result.content) {
                     tiles.push(createMangaTile({
-                        id: serie.id,
+                        id: section.id === 'ondeck' ? serie.seriesId : serie.id,
                         title: createIconText({ text: serie.metadata.title }),
-                        image: `${komgaAPI}/series/${serie.id}/thumbnail`,
+                        image: section.id === 'ondeck' ? `${komgaAPI}/books/${serie.id}/thumbnail` : `${komgaAPI}/series/${serie.id}/thumbnail`,
                     }));
                 }
                 section.items = tiles;
