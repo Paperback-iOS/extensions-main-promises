@@ -53,6 +53,12 @@ export async function searchRequest(
             if (tag.id.substr(0, 6) == "genre-") {
                 paramsList.push("genre=" + encodeURIComponent(tag.id.substring(6)));
             }
+            if (tag.id.substr(0, 11) == "collection-") {
+                paramsList.push("collection_id=" + encodeURIComponent(tag.id.substring(11)));
+            }
+            if (tag.id.substr(0, 8) == "library-") {
+                paramsList.push("library_id=" + encodeURIComponent(tag.id.substring(8)));
+            }
         });
     }
 
