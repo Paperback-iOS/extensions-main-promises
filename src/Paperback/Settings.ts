@@ -115,6 +115,28 @@ export const serverSettingsMenu = (
                         }),
                     ]),
                 }),
+                createSection({
+                    id: "sourceOptions",
+                    header: "Source Options",
+                    footer: "",
+                    rows: async () => retrieveStateData(stateManager).then((values) => [
+                        createSwitch({
+                            id: 'showOnDeck',
+                            label: 'Show On Deck',
+                            value: values.showOnDeck,
+                        }),
+                        createSwitch({
+                            id: 'showContinueReading',
+                            label: 'Show Continue Reading',
+                            value: values.showContinueReading,
+                        }),
+                        createSwitch({
+                            id: 'orderResultsAlphabetically',
+                            label: 'Sort results alphabetically',
+                            value: values.orderResultsAlphabetically,
+                        }),
+                    ]),
+                }),
             ],
         }),
     });
