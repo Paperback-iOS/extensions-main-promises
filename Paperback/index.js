@@ -3095,7 +3095,7 @@ const serverSettingsMenu = (stateManager) => {
                         // Fallback to default input field if the app version doesnt support
                         // SecureInputField
                         // @ts-ignore
-                        (createSecureInputField ?? createInputField)({
+                        (typeof createSecureInputField == 'undefined' ? createInputField : createSecureInputField)({
                             id: "serverPassword",
                             label: "Password",
                             placeholder: "Some Super Secret Password",
