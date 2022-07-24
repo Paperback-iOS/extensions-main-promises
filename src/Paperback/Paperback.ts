@@ -239,11 +239,15 @@ export class Paperback extends Source {
             createTag({ id: "tag-" + elem, label: capitalize(elem) })
         );
         tagSections[2].tags = collectionResult.content.map((elem: { name: string; id: string; }) =>
-            createTag({ id: "collection-" + elem.id, label: capitalize(elem.name) })
+            createTag({id: "collection-" + elem.id, label: capitalize(elem.name)})
         );
         tagSections[3].tags = libraryResult.map((elem: { name: string; id: string; }) =>
             createTag({ id: "library-" + elem.id, label: capitalize(elem.name) })
         );
+
+        if (collectionResult.content.length <= 1) {
+            tagSections.splice(2, 1);
+        }
 
         return tagSections;
     }
