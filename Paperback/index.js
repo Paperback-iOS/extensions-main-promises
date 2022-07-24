@@ -2593,7 +2593,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.6",
+    version: "1.2.7",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
