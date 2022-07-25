@@ -29,6 +29,7 @@ export async function searchRequest(
 
     // We won't use `await this.getKomgaAPI()` as we do not want to throw an error
     const komgaAPI = await getKomgaAPI(stateManager);
+    const { orderResultsAlphabetically } = await getOptions(stateManager);
 
     if (komgaAPI === null) {
         console.log("searchRequest failed because server settings are unset");
@@ -60,6 +61,12 @@ export async function searchRequest(
                 paramsList.push("library_id=" + encodeURIComponent(tag.id.substring(8)));
             }
         });
+    }
+
+    if (orderResultsAlphabetically) {
+        paramsList.push("sort=titleSort");
+    } else {
+        paramsList.push("sort=lastModified,desc");
     }
 
     let paramsString = "";
@@ -115,6 +122,9 @@ const DEFAULT_KOMGA_SERVER_ADDRESS = 'https://api.paperback.moe'
 const DEFAULT_KOMGA_API = DEFAULT_KOMGA_SERVER_ADDRESS + '/api/v1'
 const DEFAULT_KOMGA_USERNAME = ''
 const DEFAULT_KOMGA_PASSWORD = ''
+const DEFAULT_SHOW_ON_DECK = false
+const DEFAULT_SORT_RESULTS_ALPHABETICALLY = true
+const DEFAULT_SHOW_CONTINUE_READING = false
 
 export async function getAuthorizationString(stateManager: SourceStateManager): Promise<string> {
     return (await stateManager.keychain.retrieve('authorization') as string | undefined) ?? ''
@@ -124,6 +134,14 @@ export async function getKomgaAPI(stateManager: SourceStateManager): Promise<str
     return (await stateManager.retrieve('komgaAPI') as string | undefined) ?? DEFAULT_KOMGA_API
 }
 
+export async function getOptions(stateManager: SourceStateManager): Promise<{ showOnDeck: boolean; orderResultsAlphabetically: boolean; showContinueReading: boolean; }> {
+    const showOnDeck = (await stateManager.retrieve('showOnDeck') as boolean) ?? DEFAULT_SHOW_ON_DECK
+    const orderResultsAlphabetically = (await stateManager.retrieve('orderResultsAlphabetically') as boolean) ?? DEFAULT_SORT_RESULTS_ALPHABETICALLY
+    const showContinueReading = (await stateManager.retrieve('showContinueReading') as boolean) ?? DEFAULT_SHOW_CONTINUE_READING
+
+    return { showOnDeck, orderResultsAlphabetically, showContinueReading }
+}
+
 export async function retrieveStateData(stateManager: SourceStateManager) {
     // Return serverURL, serverUsername and serverPassword saved in the source.
     // Used to show already saved data in settings
@@ -131,11 +149,14 @@ export async function retrieveStateData(stateManager: SourceStateManager) {
     const serverURL = (await stateManager.retrieve('serverAddress') as string) ?? DEFAULT_KOMGA_SERVER_ADDRESS
     const serverUsername = (await stateManager.keychain.retrieve('serverUsername') as string) ?? DEFAULT_KOMGA_USERNAME
     const serverPassword = (await stateManager.keychain.retrieve('serverPassword') as string) ?? DEFAULT_KOMGA_PASSWORD
+    const showOnDeck = (await stateManager.retrieve('showOnDeck') as boolean) ?? DEFAULT_SHOW_ON_DECK
+    const orderResultsAlphabetically = (await stateManager.retrieve('orderResultsAlphabetically') as boolean) ?? DEFAULT_SORT_RESULTS_ALPHABETICALLY
+    const showContinueReading = (await stateManager.retrieve('showContinueReading') as boolean) ?? DEFAULT_SHOW_CONTINUE_READING
 
-    return { serverURL, serverUsername, serverPassword }
+    return { serverURL, serverUsername, serverPassword, showOnDeck, orderResultsAlphabetically, showContinueReading }
 }
 
-export async function setStateData(stateManager: SourceStateManager, data: Record<string, string>) {
+export async function setStateData(stateManager: SourceStateManager, data: Record<string, any>) {
     await setKomgaServerAddress(
         stateManager,
         data['serverAddress'] ?? DEFAULT_KOMGA_SERVER_ADDRESS
@@ -144,6 +165,12 @@ export async function setStateData(stateManager: SourceStateManager, data: Recor
         stateManager,
         data['serverUsername'] ?? DEFAULT_KOMGA_USERNAME,
         data['serverPassword'] ?? DEFAULT_KOMGA_PASSWORD
+    )
+    await setOptions(
+        stateManager,
+        data['showOnDeck'] ?? DEFAULT_SHOW_ON_DECK,
+        data['orderResultsAlphabetically'] ?? DEFAULT_SORT_RESULTS_ALPHABETICALLY,
+        data['showContinueReading'] ?? DEFAULT_SHOW_CONTINUE_READING,
     )
 }
 
@@ -156,6 +183,12 @@ async function setCredentials(stateManager: SourceStateManager, username: string
     await stateManager.keychain.store('serverUsername', username)
     await stateManager.keychain.store('serverPassword', password)
     await stateManager.keychain.store('authorization', createAuthorizationString(username, password))
+}
+
+async function setOptions(stateManager: SourceStateManager, showOnDeck: boolean, orderResultsAlphabetically: boolean, showContinueReading: boolean) {
+    await stateManager.store('showOnDeck', showOnDeck)
+    await stateManager.store('orderResultsAlphabetically', orderResultsAlphabetically)
+    await stateManager.store('showContinueReading', showContinueReading)
 }
 
 function createAuthorizationString(username: string, password: string): string {

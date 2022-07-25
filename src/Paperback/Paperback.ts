@@ -20,17 +20,14 @@ import {
     TagType,
 } from "paperback-extensions-common";
 
-import { parseLangCode } from "./Languages";
+import {parseLangCode} from "./Languages";
 
-import {
-    serverSettingsMenu,
-    testServerSettingsMenu,
-    resetSettingsButton,
-} from "./Settings";
+import {resetSettingsButton, serverSettingsMenu, testServerSettingsMenu,} from "./Settings";
 
 import {
     getAuthorizationString,
     getKomgaAPI,
+    getOptions,
     getServerUnavailableMangaTiles,
     searchRequest,
 } from "./Common";
@@ -53,7 +50,7 @@ import {
 //  - search method which is called even if the user search in an other source
 
 export const PaperbackInfo: SourceInfo = {
-    version: "1.2.7",
+    version: "1.2.8",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -242,11 +239,15 @@ export class Paperback extends Source {
             createTag({ id: "tag-" + elem, label: capitalize(elem) })
         );
         tagSections[2].tags = collectionResult.content.map((elem: { name: string; id: string; }) =>
-            createTag({ id: "collection-" + elem.id, label: capitalize(elem.name) })
+            createTag({id: "collection-" + elem.id, label: capitalize(elem.name)})
         );
         tagSections[3].tags = libraryResult.map((elem: { name: string; id: string; }) =>
             createTag({ id: "library-" + elem.id, label: capitalize(elem.name) })
         );
+
+        if (collectionResult.content.length <= 1) {
+            tagSections.splice(2, 1);
+        }
 
         return tagSections;
     }
@@ -440,6 +441,8 @@ export class Paperback extends Source {
         // We won't use `await this.getKomgaAPI()` as we do not want to throw an error on
         // the homepage when server settings are not set
         const komgaAPI = await getKomgaAPI(this.stateManager);
+        const { showOnDeck, showContinueReading } = await getOptions(this.stateManager);
+
 
         if (komgaAPI === null) {
             console.log("searchRequest failed because server settings are unset");
@@ -454,40 +457,66 @@ export class Paperback extends Source {
         }
 
         // The source define two homepage sections: new and latest
-        const sections = [
-            createHomeSection({
+        const sections = [];
+
+        if (showOnDeck) {
+            sections.push(createHomeSection({
                 id: 'ondeck',
                 title: 'On Deck',
                 view_more: false,
-            }),
-            createHomeSection({
-                id: 'new',
-                title: 'Recently added series',
-                view_more: true,
-            }),
-            createHomeSection({
-                id: 'updated',
-                title: 'Recently updated series',
-                view_more: true,
-            }),
-        ];
+            }));
+        }
 
+        if (showContinueReading) {
+            sections.push(createHomeSection({
+                id: 'continue',
+                title: 'Continue Reading',
+                view_more: false,
+            }));
+        }
+
+        sections.push(createHomeSection({
+            id: 'new',
+            title: 'Recently added series',
+            //type: showRecentFeatured ? HomeSectionType.featured : HomeSectionType.singleRowNormal,
+            view_more: true,
+        }));
+        sections.push(createHomeSection({
+            id: 'updated',
+            title: 'Recently updated series',
+            view_more: true,
+        }));
         const promises: Promise<void>[] = [];
 
         for (const section of sections) {
             // Let the app load empty tagSections
             sectionCallback(section);
 
-            let apiPath;
-            if (section.id === 'ondeck') {
-                apiPath = `${komgaAPI}/books/${section.id}`;
-            } else {
-                apiPath = `${komgaAPI}/series/${section.id}`;
+            let apiPath: string, thumbPath: string, params: string, idProp: string;
+            switch (section.id) {
+                case 'ondeck':
+                    apiPath = `${komgaAPI}/books/${section.id}`;
+                    thumbPath = `${komgaAPI}/books`;
+                    params = '?page=0&size=20&deleted=false';
+                    idProp = 'seriesId';
+                    break;
+                case 'continue':
+                    apiPath = `${komgaAPI}/books`;
+                    thumbPath = `${komgaAPI}/books`;
+                    params = '?sort=readProgress.readDate,desc&read_status=IN_PROGRESS&page=0&size=20&deleted=false';
+                    idProp = 'seriesId';
+                    break;
+                default:
+                    apiPath = `${komgaAPI}/series/${section.id}`;
+                    thumbPath = `${komgaAPI}/series`;
+                    params = '?page=0&size=20&deleted=false';
+                    idProp = 'id';
+                    break;
             }
 
             const request = createRequestObject({
                 url: apiPath,
-                param: "?page=0&size=20&deleted=false",
+                param: params,
                 method: "GET",
             });
 
@@ -502,9 +531,9 @@ export class Paperback extends Source {
                     for (const serie of result.content) {
                         tiles.push(
                             createMangaTile({
-                                id: section.id === 'ondeck' ? serie.seriesId : serie.id,
+                                id: serie[idProp],
                                 title: createIconText({ text: serie.metadata.title }),
-                                image: section.id === 'ondeck' ? `${komgaAPI}/books/${serie.id}/thumbnail` : `${komgaAPI}/series/${serie.id}/thumbnail`,
+                                image: `${thumbPath}/${serie.id}/thumbnail`,
                             })
                         );
                     }
