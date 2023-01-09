@@ -50,7 +50,7 @@ import {
 //  - search method which is called even if the user search in an other source
 
 export const PaperbackInfo: SourceInfo = {
-    version: "1.2.8",
+    version: "1.2.9",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -113,6 +113,20 @@ export class KomgaRequestInterceptor implements RequestInterceptor {
     }
 
     async interceptRequest(request: Request): Promise<Request> {
+        // NOTE: Doing it like this will make downloads work tried every other method did not work, if there is a better method make edit it and make pull request
+
+        if(request.url.includes('intercept*')){
+            const url = request?.url?.split('*').pop() ?? ''
+            
+            request.headers = {
+                'authorization': await getAuthorizationString(this.stateManager)
+            }
+
+            request.url = url
+
+            return request
+        }
+
         if (request.headers === undefined) {
             request.headers = {};
         }
@@ -383,10 +397,10 @@ export class Paperback extends Source {
         const pages: string[] = [];
         for (const page of result) {
             if (SUPPORTED_IMAGE_TYPES.includes(page.mediaType)) {
-                pages.push(`${komgaAPI}/books/${chapterId}/pages/${page.number}`);
+                pages.push(`intercept*${komgaAPI}/books/${chapterId}/pages/${page.number}`);
             } else {
                 pages.push(
-                    `${komgaAPI}/books/${chapterId}/pages/${page.number}?convert=png`
+                    `intercept*${komgaAPI}/books/${chapterId}/pages/${page.number}?convert=png`
                 );
             }
         }
