@@ -2619,7 +2619,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.8",
+    version: "1.2.9",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -2669,6 +2669,15 @@ class KomgaRequestInterceptor {
         return response;
     }
     async interceptRequest(request) {
+        // NOTE: Doing it like this will make downloads work tried every other method did not work, if there is a better method make edit it and make pull request
+        if (request.url.includes('intercept*')) {
+            const url = request?.url?.split('*').pop() ?? '';
+            request.headers = {
+                'authorization': await (0, Common_1.getAuthorizationString)(this.stateManager)
+            };
+            request.url = url;
+            return request;
+        }
         if (request.headers === undefined) {
             request.headers = {};
         }
@@ -2870,10 +2879,10 @@ class Paperback extends paperback_extensions_common_1.Source {
         const pages = [];
         for (const page of result) {
             if (SUPPORTED_IMAGE_TYPES.includes(page.mediaType)) {
-                pages.push(`${komgaAPI}/books/${chapterId}/pages/${page.number}`);
+                pages.push(`intercept*${komgaAPI}/books/${chapterId}/pages/${page.number}`);
             }
             else {
-                pages.push(`${komgaAPI}/books/${chapterId}/pages/${page.number}?convert=png`);
+                pages.push(`intercept*${komgaAPI}/books/${chapterId}/pages/${page.number}?convert=png`);
             }
         }
         // Determine the preferred reading direction which is only available in the serie metadata
