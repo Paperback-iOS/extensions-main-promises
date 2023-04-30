@@ -2513,7 +2513,7 @@ async function retrieveStateData(stateManager) {
 }
 exports.retrieveStateData = retrieveStateData;
 async function setStateData(stateManager, data) {
-    await setKomgaServerAddress(stateManager, data['serverAddress'] ?? DEFAULT_KOMGA_SERVER_ADDRESS);
+    await setKomgaServerAddress(stateManager, data['serverURL'] ?? DEFAULT_KOMGA_SERVER_ADDRESS);
     await setCredentials(stateManager, data['serverUsername'] ?? DEFAULT_KOMGA_USERNAME, data['serverPassword'] ?? DEFAULT_KOMGA_PASSWORD);
     await setOptions(stateManager, data['showOnDeck'] ?? DEFAULT_SHOW_ON_DECK, data['orderResultsAlphabetically'] ?? DEFAULT_SORT_RESULTS_ALPHABETICALLY, data['showContinueReading'] ?? DEFAULT_SHOW_CONTINUE_READING);
 }
