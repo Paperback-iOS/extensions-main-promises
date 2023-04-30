@@ -159,7 +159,7 @@ export async function retrieveStateData(stateManager: SourceStateManager) {
 export async function setStateData(stateManager: SourceStateManager, data: Record<string, any>) {
     await setKomgaServerAddress(
         stateManager,
-        data['serverAddress'] ?? DEFAULT_KOMGA_SERVER_ADDRESS
+        data['serverURL'] ?? DEFAULT_KOMGA_SERVER_ADDRESS
     )
     await setCredentials(
         stateManager,
