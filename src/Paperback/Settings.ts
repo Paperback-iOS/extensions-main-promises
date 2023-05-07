@@ -90,7 +90,7 @@ export const serverSettingsMenu = (
                     footer: "Minimal Komga version: v0.100.0",
                     rows: async () => retrieveStateData(stateManager).then((values) => [
                         createInputField({
-                            id: "serverAddress",
+                            id: "serverURL",
                             label: "Server URL",
                             placeholder: "http://127.0.0.1:8080",
                             value: values.serverURL,
