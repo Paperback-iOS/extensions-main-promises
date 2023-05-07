@@ -2619,7 +2619,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.10",
+    version: "1.2.11",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -3140,7 +3140,7 @@ const serverSettingsMenu = (stateManager) => {
                     footer: "Minimal Komga version: v0.100.0",
                     rows: async () => (0, Common_1.retrieveStateData)(stateManager).then((values) => [
                         createInputField({
-                            id: "serverAddress",
+                            id: "serverURL",
                             label: "Server URL",
                             placeholder: "http://127.0.0.1:8080",
                             value: values.serverURL,
