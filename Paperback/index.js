@@ -2513,7 +2513,7 @@ async function retrieveStateData(stateManager) {
 }
 exports.retrieveStateData = retrieveStateData;
 async function setStateData(stateManager, data) {
-    await setKomgaServerAddress(stateManager, data['serverURL'] ?? DEFAULT_KOMGA_SERVER_ADDRESS);
+    await setKomgaServerAddress(stateManager, data['serverAddress'] ?? DEFAULT_KOMGA_SERVER_ADDRESS);
     await setCredentials(stateManager, data['serverUsername'] ?? DEFAULT_KOMGA_USERNAME, data['serverPassword'] ?? DEFAULT_KOMGA_PASSWORD);
     await setOptions(stateManager, data['showOnDeck'] ?? DEFAULT_SHOW_ON_DECK, data['orderResultsAlphabetically'] ?? DEFAULT_SORT_RESULTS_ALPHABETICALLY, data['showContinueReading'] ?? DEFAULT_SHOW_CONTINUE_READING);
 }
@@ -2619,7 +2619,7 @@ const Common_1 = require("./Common");
 //  - getTags() which is called on the homepage
 //  - search method which is called even if the user search in an other source
 exports.PaperbackInfo = {
-    version: "1.2.11",
+    version: "1.2.9",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -3140,7 +3140,7 @@ const serverSettingsMenu = (stateManager) => {
                     footer: "Minimal Komga version: v0.100.0",
                     rows: async () => (0, Common_1.retrieveStateData)(stateManager).then((values) => [
                         createInputField({
-                            id: "serverURL",
+                            id: "serverAddress",
                             label: "Server URL",
                             placeholder: "http://127.0.0.1:8080",
                             value: values.serverURL,
