@@ -50,7 +50,7 @@ import {
 //  - search method which is called even if the user search in an other source
 
 export const PaperbackInfo: SourceInfo = {
-    version: "1.2.9",
+    version: "1.2.10",
     name: "Paperback",
     icon: "icon.png",
     author: "Lemon | Faizan Durrani",
@@ -187,25 +187,25 @@ export class Paperback extends Source {
             const komgaAPI = await getKomgaAPI(this.stateManager);
 
             const genresRequest = createRequestObject({
-                url: `${komgaAPI}/genres/`,
+                url: `${komgaAPI}/genres`,
                 method: "GET",
             });
             genresResponse = await this.requestManager.schedule(genresRequest, 1);
 
             const tagsRequest = createRequestObject({
-                url: `${komgaAPI}/tags/series/`,
+                url: `${komgaAPI}/tags/series`,
                 method: "GET",
             });
             tagsResponse = await this.requestManager.schedule(tagsRequest, 1);
 
             const collectionRequest = createRequestObject({
-                url: `${komgaAPI}/collections/`,
+                url: `${komgaAPI}/collections`,
                 method: "GET",
             });
             collectionResponse = await this.requestManager.schedule(collectionRequest, 1);
 
             const libraryRequest = createRequestObject({
-                url: `${komgaAPI}/libraries/`,
+                url: `${komgaAPI}/libraries`,
                 method: "GET",
             });
             libraryResponse = await this.requestManager.schedule(libraryRequest, 1);
@@ -273,7 +273,7 @@ export class Paperback extends Source {
         const komgaAPI = await getKomgaAPI(this.stateManager);
 
         const request = createRequestObject({
-            url: `${komgaAPI}/series/${mangaId}/`,
+            url: `${komgaAPI}/series/${mangaId}`,
             method: "GET",
         });
 
@@ -351,7 +351,7 @@ export class Paperback extends Source {
 
         // Chapters language is only available on the serie page
         const serieRequest = createRequestObject({
-            url: `${komgaAPI}/series/${mangaId}/`,
+            url: `${komgaAPI}/series/${mangaId}`,
             method: "GET",
         });
         const serieResponse = await this.requestManager.schedule(serieRequest, 1);
@@ -407,7 +407,7 @@ export class Paperback extends Source {
 
         // Determine the preferred reading direction which is only available in the serie metadata
         const serieRequest = createRequestObject({
-            url: `${komgaAPI}/series/${mangaId}/`,
+            url: `${komgaAPI}/series/${mangaId}`,
             method: "GET",
         });
 
@@ -613,7 +613,7 @@ export class Paperback extends Source {
 
         while (loadMore) {
             const request = createRequestObject({
-                url: `${komgaAPI}/series/updated/`,
+                url: `${komgaAPI}/series/updated`,
                 param: `?page=${page}&size=${PAGE_SIZE}&deleted=false`,
                 method: "GET",
             });
